@@ -2,7 +2,8 @@
 import { useEffect, useState, useRef } from "react";
 import socket from "../socketClient";
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+// ✅ تم تعديل هذا السطر
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
 
 export default function WhatsAppStatus({ tenantId, tenantName }) {
   const [serverStatus, setServerStatus] = useState(null);
@@ -46,8 +47,9 @@ export default function WhatsAppStatus({ tenantId, tenantName }) {
     let mounted = true;
     const fetchStatus = async () => {
       try {
+        // ✅ وتم تعديل هذا السطر
         const res = await fetch(
-          `${API_BASE.replace(/\/$/, "")}/api/whatsapp/status/${tenantId}`,
+          `${API_BASE.replace(/\/$/, "")}/whatsapp/status/${tenantId}`,
           { cache: "no-store" }
         );
         const json = await res.json();
@@ -66,7 +68,7 @@ export default function WhatsAppStatus({ tenantId, tenantName }) {
       mounted = false;
       clearInterval(pollRef.current);
     };
-  }, [tenantId]);
+  }, [tenantId, API_BASE]);
 
   const badge = (text, green) => (
     <span

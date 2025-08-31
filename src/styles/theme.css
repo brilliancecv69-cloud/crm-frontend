@@ -1,0 +1,358 @@
+/* ==========================================================================
+   LEGEND THEME — Single Premium Beige + Dark Sidebar (Stable)
+   ========================================================================== */
+
+/* Fonts & Icons */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300..800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24..48,400,0,0");
+
+/* -------------------- Base Tokens (Single Theme) --------------------- */
+:root{
+  /* Brand (neutral, minimal usage) */
+  --brand:      #0EA5E9;   /* used sparingly for focus ring/links if needed */
+  --brand-600:  #0284C7;
+
+  /* State */
+  --ok:#22c55e; --warn:#f59e0b; --info:#0ea5e9; --danger:#ef4444; --muted:#6b7280;
+
+  /* Surfaces — Premium Beige */
+  --bg:#F7F3EE;           /* page background (beige-very-light) */
+  --surface:#FFFFFF;      /* cards/tables */
+  --surface-2:#FBFBFB;    /* inputs/light fills */
+  --border:#EAE6DF;       /* soft divider */
+
+  /* Text */
+  --text:#1E1E1E; 
+  --text-soft:#6B7280;
+
+  /* Sidebar (Premium Dark) */
+  --sidebar:#121212;         /* or #1A1A1A if تفضّل رمادي أدكن أقل */
+  --sidebar-text:#E5E7EB;
+
+  /* Radii & shadows */
+  --radius:14px; --radius-sm:10px;
+  --shadow:0 8px 24px rgba(0,0,0,0.06);
+
+  /* Effects (subtle) */
+  --ring:0 0 0 3px rgba(14,165,233,.18);
+  --ring-danger:0 0 0 3px rgba(239,68,68,.22);
+
+  /* ====== Table (Light defaults) ====== */
+  --table-bg:#FFFFFF;
+  --table-head:#F4F1EC;
+  --table-border:var(--border);
+  --table-row-alt: color-mix(in srgb, #000 2%, transparent);
+  --table-row-hover: color-mix(in srgb, #000 6%, transparent);
+}
+
+/* ------------------------------ Base ------------------------------ */
+*,
+*::before,
+*::after{ box-sizing:border-box }
+
+/* Prevent horizontal scroll & stabilize layout */
+html,body,#root{ height:100% }
+html,body{
+  width:100%;
+  margin:0;
+  padding:0;
+  overflow-x:hidden;           /* safety net; also fix widths below */
+  background:var(--bg);
+  color:var(--text);
+  -webkit-font-smoothing:antialiased; 
+  -moz-osx-font-smoothing:grayscale;
+}
+body{
+  font-family:Inter,system-ui,Arial,sans-serif;
+}
+
+/* neutral container width */
+.page{ max-width:1100px; margin:28px auto; padding:0 20px }
+.head{ display:flex; align-items:center; justify-content:space-between; margin:8px 0 18px }
+.head h2{ margin:0; font-size:24px; font-weight:800 }
+
+/* Remove fancy backgrounds/effects */
+.aurora, .glass-header { display:none !important }
+
+/* Focus ring */
+:where(button,a,input,select,textarea):focus{ outline:none; box-shadow:var(--ring) }
+
+/* -------------------------------- Inputs / Buttons -------------------------------- */
+.field{ display:flex; flex-direction:column; gap:6px }
+.field>span{ font-size:12px; color:var(--text-soft) }
+
+.input, :where(input,select,textarea):not(.unstyled){
+  width:100%;
+  height:40px;
+  padding:0 12px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:var(--surface-2);
+  color:var(--text);
+}
+:where(textarea):not(.unstyled){ height:auto; min-height:110px; padding:10px 12px }
+.input::placeholder{ color:var(--muted) }
+
+.btn{
+  height:38px; padding:0 14px; border-radius:12px; border:1px solid var(--border);
+  background:var(--surface); color:var(--text);
+  cursor:pointer; display:inline-flex; align-items:center; gap:8px;
+}
+.btn:hover{ background:#F1EFEA }
+.btn:active{ transform:translateY(1px) }
+.btn.primary{
+  background:var(--text); color:#fff; border-color:transparent;
+  box-shadow:0 6px 16px rgba(0,0,0,.08);
+}
+.btn.secondary{ background:var(--surface); border-color:var(--border) }
+.btn.ghost{ background:transparent; border-color:transparent; color:var(--text-soft) }
+.btn.danger{
+  background:#DC2626; color:#fff; border-color:transparent;
+  box-shadow:0 6px 16px rgba(220,38,38,.18);
+}
+.icon-btn{
+  width:36px; height:36px; border-radius:12px; border:1px solid var(--border);
+  background:var(--surface); display:inline-grid; place-items:center; cursor:pointer;
+}
+
+.i{ font-family:"Material Symbols Outlined"; font-size:20px; line-height:1; display:inline-block; vertical-align:middle }
+
+/* Remove theme toggle visuals (single theme) */
+.theme-btn, .brand-tile { display:none !important }
+
+/* -------------------------------- Cards -------------------------------- */
+.card,[data-card]{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:18px;
+}
+
+/* -------------------------------- Sidebar -------------------------------- */
+.sidebar{
+  background:var(--sidebar);
+  color:var(--sidebar-text);
+}
+.sidebar a, .sidebar button{ color:var(--sidebar-text) }
+
+/* -------------------------------- Content area -------------------------------- */
+.content-area{ position:relative; z-index:1 }
+
+/* -------------------------------- Data Tables -------------------------------- */
+.table-wrap{
+  margin-top:10px;
+  background:var(--table-bg);
+  border:1px solid var(--table-border);
+  border-radius:16px;
+  box-shadow:var(--shadow);
+  overflow:auto;                     /* internal scroll; sticky header works */
+  max-height:calc(100vh - 260px);
+}
+.table{ width:100%; border-collapse:separate; border-spacing:0 }
+
+/* Prevent child from forcing horizontal scroll */
+.table, .table *{ max-width:100% }
+.table th, .table td{
+  padding:13px 14px;
+  border-bottom:1px solid var(--table-border);
+  text-align:left;
+  color:var(--text);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.table a{ color:var(--text); text-decoration:none }
+.table a:hover{ text-decoration:underline }
+
+.table thead th{
+  position:sticky; top:0; z-index:2;
+  background:var(--table-head);
+  font-size:12px; color:var(--text-soft); font-weight:800; letter-spacing:.3px; text-transform:uppercase;
+  border-bottom:1px solid var(--table-border);
+}
+.table tbody tr{ transition:background .15s }
+.table tbody tr:nth-child(odd){ background:var(--table-row-alt) }
+.table tbody tr:hover{ background:var(--table-row-hover) }
+.table tbody tr:last-child td{ border-bottom:none }
+
+/* Selected row (optional) */
+.table tr.is-selected{ background:color-mix(in srgb,#000 10%, transparent) !important }
+
+/* Sortable headers */
+.table .th-sort{ cursor:pointer; user-select:none }
+.table .th-sort::after{
+  content:"\e5d8"; /* arrow_upward_alt */
+  font-family:"Material Symbols Outlined"; font-size:18px; opacity:.45; margin-left:6px;
+}
+.table .th-sort.asc::after{ content:"\e5d8"; transform:rotate(180deg) }
+.table .th-sort.desc::after{ content:"\e5db" } /* arrow_downward */
+
+/* Action chip inside table */
+.table .chip{
+  height:30px; padding:0 12px; border-radius:999px;
+  background:#10b981; color:#fff; font-weight:700; border:none; cursor:pointer
+}
+.table .chip:hover{ filter:brightness(1.05) }
+
+/* Pagination (optional) */
+.table-pagination{
+  display:flex; align-items:center; justify-content:flex-end; gap:8px;
+  padding:10px 12px; border-top:1px solid var(--table-border); background:var(--table-head);
+}
+.table-pagination .btn{ height:32px; border-radius:10px }
+.table-pagination .page-info{ font-size:12px; color:var(--text-soft) }
+
+/* ===== Numbers alignment (phones) ===== */
+.table td:nth-child(2), .table td[data-col="phone"]{
+  font-variant-numeric: tabular-nums;
+  letter-spacing:.2px;
+}
+
+/* ========================================================================== 
+   Badges (stage + pipeline)
+   ========================================================================== */
+.badge{
+  display:inline-flex; align-items:center; gap:6px; height:26px; padding:0 10px;
+  border-radius:999px; font-size:12px; font-weight:800; letter-spacing:.2px;
+  border:1px solid var(--border); background:var(--surface-2); color:var(--text-soft)
+}
+[data-stage="lead"]{background:#EAF0F2;border-color:#E0E5E7;color:#0f172a}
+[data-stage="customer"]{background:#EBF2EE;border-color:#E0E7E2;color:#0f172a}
+[data-stage="sales"]{background:#EAF5EE;border-color:#DDEFE3;color:#14532d}
+
+[data-status="converted"]{background:#EAF5EE;border-color:#DDEFE3;color:#16a34a}
+[data-status="follow_up"]{background:#FFF4E5;border-color:#F6E7CC;color:#b45309}
+
+[data-pipe="new"]{background:#EEEFF3;border-color:#E5E7EB;color:#1E1E1E}
+[data-pipe="contacted"]{background:#EAF0F7;border-color:#E0E7F1;color:#1E1E1E}
+[data-pipe="qualified"]{background:#EEEAF8;border-color:#E5E1FA;color:#1E1E1E}
+[data-pipe="proposal"]{background:#FFF4E5;border-color:#F6E7CC;color:#1E1E1E}
+[data-pipe="won"]{background:#EAF5EE;border-color:#DDEFE3;color:#15803d}
+[data-pipe="lost"]{background:#FDECEC;border-color:#F7D4D4;color:#b91c1c}
+
+/* -------------------------------- Modal -------------------------------- */
+.modal-overlay{
+  position:fixed; inset:0; background:rgba(0,0,0,.45);
+  display:grid; place-items:center; z-index:60
+}
+.modal{
+  width:min(640px,92vw);
+  background:var(--surface); border:1px solid var(--border); border-radius:18px;
+  box-shadow:var(--shadow); overflow:hidden; z-index:61
+}
+.modal-header{ display:flex; justify-content:space-between; align-items:center; padding:14px 16px; border-bottom:1px solid var(--border) }
+.modal-body{ padding:16px; display:grid; gap:10px }
+.modal-footer{ padding:12px 16px; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:10px }
+
+/* -------------------------------- Command Trigger -------------------------------- */
+.cmdk-btn{
+  height:40px; display:flex; align-items:center; gap:8px; padding:0 12px;
+  border-radius:12px; border:1px dashed var(--border); background:var(--surface-2); color:var(--text-soft); cursor:pointer
+}
+.cmdk-btn kbd{
+  margin-left:8px; font-size:11px; border:1px solid var(--border); background:var(--surface); padding:2px 6px; border-radius:6px; color:var(--text)
+}
+
+/* -------------------------------- User Menu -------------------------------- */
+.user-menu{ position:relative }
+.user-btn{
+  display:flex; align-items:center; gap:8px; padding:4px 6px; border-radius:12px;
+  border:1px solid var(--border); background:var(--surface); cursor:pointer
+}
+.avatar{
+  height:34px; width:34px; border-radius:50%;
+  background:#222; color:#fff; display:grid; place-items:center; font-weight:800
+}
+.user-dropdown{
+  position:absolute; right:0; top:calc(100% + 8px); min-width:220px;
+  background:var(--surface); border:1px solid var(--border); border-radius:14px;
+  box-shadow:var(--shadow); padding:8px; z-index:70
+}
+.user-dropdown .item{
+  display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:10px; cursor:pointer
+}
+.user-dropdown .item:hover{ background:#F1EFEA }
+
+/* -------------------------------- Utilities -------------------------------- */
+/* Kill heavy transitions to avoid flicker */
+*{ transition:none !important }
+.elevate{ box-shadow:var(--shadow) } 
+.round{ border-radius:var(--radius) } 
+.round-sm{ border-radius:var(--radius-sm) }
+
+/* Ensure flex/grid children don't overflow parents */
+.flex, .grid, .main, .content, .table-wrap, .card { min-width:0 }
+
+/* Media motion reduce */
+@media (prefers-reduced-motion:reduce){
+  *{ animation:none !important; transition:none !important }
+}
+/* خلي الصفحة كلها تتمد */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* الحاوية الأساسية */
+.page {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background: var(--bg);
+  min-height: 0;   /* يمنع القص */
+}
+
+/* لف الجدول (الإصدار الصح) */
+.table-wrap {
+  flex: 1 1 auto;          /* يملأ المساحة الباقية بشكل مرن */
+  min-height: 0;           /* ضروري مع flex عشان يفعّل السكروول */
+  width: 100%;
+  margin-top: 16px;
+
+  background: var(--table-bg);
+  border: 1px solid var(--table-border);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+
+  overflow: auto;          /* يرجع السكروول الداخلي */
+  max-height: calc(100vh - 260px); /* يحدد أقصى ارتفاع */
+}
+
+
+/* الجدول نفسه */
+.table {
+  width: 100%;
+  height: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;     /* ثبات الأعمدة */
+}
+
+.table th,
+.table td {
+  padding: 13px 14px;
+  border-bottom: 1px solid var(--table-border);
+  text-align: left;
+  color: var(--text);
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.table thead th {
+  background: var(--table-head);
+  font-size: 12px;
+  color: var(--text-soft);
+  font-weight: 800;
+  letter-spacing: .3px;
+  text-transform: uppercase;
+}
+/* خلي الـ dropdown يفتح لفوق لو الأيقونة محطوطة تحت */
+.user-menu.bottom .user-dropdown {
+  top: auto;          /* شيل الوضعية الافتراضية */
+  bottom: calc(100% + 8px); /* يخليه يطلع فوق */
+}

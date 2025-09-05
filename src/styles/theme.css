@@ -1,0 +1,698 @@
+/* ==========================================================================
+   THEME: "Golden Hour CRM"
+   VERSION: 2.3 (WhatsApp Bubbles Added)
+   DESCRIPTION: A premium, elegant, and comprehensive theme with full
+                light and dark mode support, 3D interactive elements,
+                and fluid animations for a professional user experience.
+   ========================================================================== */
+
+/*
+ * SECTION 1: IMPORTS & FONT DEFINITIONS
+ * Using "Inter" for its excellent readability on screens and
+ * "Material Symbols Outlined" for a consistent and modern icon set.
+ */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24..48,400,0,0");
+
+/*
+ * SECTION 2: CSS CUSTOM PROPERTIES (THEME TOKENS)
+ * This is the heart of our theming system. We define all colors, spacing,
+ * shadows, and other design values here for easy customization.
+ */
+
+/* Light Theme (Default) */
+:root, [data-theme='light'] {
+  /* 2.1: Brand & Accent Colors */
+  --brand-primary: #f59e0b;      /* Amber 500 - Warm, inviting gold */
+  --brand-primary-hover: #d97706;/* Amber 600 - Deeper gold for interaction */
+  --brand-primary-light: #fef3c7;/* Amber 200 - Soft highlight */
+  --brand-secondary: #1e293b;   /* Slate 800 - Deep charcoal for strong contrast */
+  
+  /* 2.2: State Colors */
+  --color-success: #16a34a;      /* Green 600 */
+  --color-warning: #f59e0b;      /* Amber 500 */
+  --color-danger: #dc2626;       /* Red 600 */
+  --color-info: #2563eb;         /* Blue 600 */
+  --color-success-bg: #dcfce7;   /* Green 100 */
+  --color-danger-bg: #fee2e2;    /* Red 100 */
+
+  /* 2.3: Surface & Background Colors */
+  --bg-primary: #FFFBF5;        /* Very light, warm off-white */
+  --bg-secondary: #FFFFFF;      /* Cards, modals, tables */
+  --bg-tertiary: #F8F5F1;       /* Inputs, light hover states */
+  --sidebar-bg: #111827;       /* A deep, near-black for a premium sidebar */
+
+  /* 2.4: Text Colors */
+  --text-primary: #1e293b;      /* Slate 800 - Main text color */
+  --text-secondary: #475569;    /* Slate 600 - Softer text for labels, subtitles */
+  --text-muted: #94a3b8;        /* Slate 400 - Muted, for placeholders */
+  --text-inverted: #FFFFFF;
+  --text-on-brand: #FFFFFF;     /* Text on top of the primary brand color */
+  --sidebar-text: #d1d5db;     /* gray-300 - For sidebar links */
+
+  /* 2.5: Border, Divider, and Ring Colors */
+  --border-primary: #EAE6DF;    /* Soft, low-contrast divider */
+  --border-secondary: #d1d5db;  /* A slightly stronger border */
+  --ring-color: rgba(245, 158, 11, 0.3); /* For focus states */
+
+  /* 2.6: Sizing & Radii */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+
+  /* 2.7: Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.08);
+  --shadow-inset: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
+
+  /* 2.8: Transitions */
+  --transition-speed-fast: 150ms;
+  --transition-speed-normal: 250ms;
+  --transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Dark Theme */
+[data-theme='dark'] {
+  --brand-primary: #f59e0b;
+  --brand-primary-hover: #fbbf24;
+  --brand-primary-light: rgba(245, 158, 11, 0.1);
+  --brand-secondary: #e2e8f0;
+  
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+  --color-info: #3b82f6;
+  --color-success-bg: rgba(34, 197, 94, 0.15);
+  --color-danger-bg: rgba(239, 68, 68, 0.15);
+
+  --bg-primary: #0F172A;
+  --bg-secondary: #1E293B;
+  --bg-tertiary: #334155;
+  --sidebar-bg: #0F172A;
+
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --text-inverted: #1e293b;
+  --text-on-brand: #1e293b;
+  --sidebar-text: #94a3b8;
+  
+  --border-primary: #334155;
+  --border-secondary: #475569;
+  --ring-color: rgba(245, 158, 11, 0.4);
+
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.1);
+  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.15), 0 2px 4px -2px rgb(0 0 0 / 0.15);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.2), 0 4px 6px -4px rgb(0 0 0 / 0.2);
+}
+
+/*
+ * SECTION 3: BASE & GLOBAL STYLES
+ * Resets, default typography, and global helper classes.
+ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  border-width: 0;
+  border-style: solid;
+  border-color: var(--border-primary);
+}
+html, body, #root {
+  height: 100%;
+}
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  line-height: 1.6;
+  transition: background-color var(--transition-speed-normal) var(--transition-easing), color var(--transition-speed-normal) var(--transition-easing);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Typography Scale */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+h1 { font-size: 2.5rem; }
+h2 { font-size: 1.875rem; }
+h3 { font-size: 1.25rem; }
+p { margin-top: 0; margin-bottom: 1rem; color: var(--text-secondary); }
+a { color: var(--brand-primary); text-decoration: none; transition: color var(--transition-speed-fast) ease; }
+a:hover { color: var(--brand-primary-hover); }
+
+/* Global Focus Ring Style */
+:where(button, a, input, select, textarea):focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--ring-color);
+}
+
+/* Icon helper class */
+.i {
+  font-family: "Material Symbols Outlined";
+  font-size: 20px;
+  line-height: 1;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/*
+ * SECTION 4: LAYOUT & CONTAINERS
+ * Styles for main layout components like the sidebar, header, and page containers.
+ */
+.layout-wrapper {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Sidebar Styles */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  background-color: var(--sidebar-bg);
+  border-right: 1px solid var(--border-primary);
+  width: 16rem; /* 256px */
+  transition: width 300ms var(--transition-easing);
+}
+.sidebar.is-collapsed {
+  width: 5rem; /* 80px */
+}
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  min-height: 40px; /* stabilize height */
+}
+.sidebar-brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--text-inverted);
+  font-weight: 800;
+  font-size: 1.25rem;
+}
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.sidebar .nav-link {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem;
+  border-radius: var(--radius-md);
+  color: var(--sidebar-text);
+  font-weight: 500;
+  transition: all var(--transition-speed-fast) var(--transition-easing);
+}
+.sidebar .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+.sidebar .nav-link.active {
+  background: var(--brand-primary);
+  color: var(--text-on-brand);
+  font-weight: 700;
+  box-shadow: 0 4px 14px -4px var(--brand-primary);
+}
+.sidebar .nav-link .i {
+  flex-shrink: 0;
+  width: 1.5rem; /* 24px */
+  font-size: 1.5rem;
+  display: inline-flex;
+  justify-content: center;
+  transition: margin 300ms var(--transition-easing);
+}
+.sidebar.is-collapsed .nav-link .i {
+  margin: 0 auto;
+}
+.sidebar .link-text {
+  margin-left: 0.75rem;
+  white-space: nowrap;
+  transition: opacity 150ms ease, width 150ms ease, margin 150ms ease;
+}
+.sidebar.is-collapsed .link-text {
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+  margin-left: 0;
+}
+
+/* Main Content & Header */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* Fix flexbox overflow */
+}
+.main-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  height: 4.5rem; /* 72px */
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* CRITICAL FIX */
+  width: 100%;
+  background-color: rgba(255, 251, 245, 0.7); /* Light Glassmorphism */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border-primary);
+}
+[data-theme='dark'] .main-header {
+  background-color: rgba(15, 23, 42, 0.7); /* Dark Glassmorphism */
+}
+
+/* Page Container */
+.page {
+  flex-grow: 1; /* Allow page to fill remaining space */
+  padding: 2rem;
+  animation: fadeIn 0.5s ease-out;
+}
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0rem;
+}
+
+/*
+ * SECTION 5: COMPONENT STYLES
+ * Detailed styling for reusable components.
+ */
+
+/* 5.1: Buttons - Premium 3D Style */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transform: translateY(0);
+  transition: all var(--transition-speed-fast) ease-out;
+  user-select: none;
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btn.primary {
+  background: var(--brand-primary);
+  color: var(--text-on-brand);
+  border-bottom: 3px solid rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow);
+}
+.btn.primary:not(:disabled):hover {
+  background: var(--brand-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg), 0 0 15px -5px var(--brand-primary);
+}
+.btn.primary:not(:disabled):active {
+  transform: translateY(0);
+  border-bottom-width: 1px;
+  box-shadow: var(--shadow-sm);
+}
+.btn.secondary {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-secondary);
+  border-bottom-width: 3px;
+}
+.btn.secondary:not(:disabled):hover {
+  background-color: var(--bg-tertiary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+.btn.secondary:not(:disabled):active {
+  transform: translateY(0);
+  border-bottom-width: 1px;
+}
+.btn.danger {
+  background-color: var(--color-danger);
+  color: var(--text-inverted);
+  border-bottom: 3px solid rgba(0,0,0,0.2);
+}
+.btn.danger:not(:disabled):hover {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg), 0 0 15px -5px var(--color-danger);
+}
+.btn.ghost {
+  background-color: transparent;
+  color: var(--text-secondary);
+}
+.btn.ghost:not(:disabled):hover {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: var(--radius-md);
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  color: var(--text-secondary);
+}
+.icon-btn:not(:disabled):hover {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+}
+.icon-btn .i { font-size: 1.25rem; }
+
+/* 5.2: Forms & Inputs */
+.field { display: flex; flex-direction: column; gap: 0.5rem; }
+.field-label { font-size: 0.875rem; font-weight: 500; color: var(--text-secondary); }
+.input, textarea, select {
+  width: 100%;
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+textarea { min-height: 120px; resize: vertical; }
+.input::placeholder { color: var(--text-muted); }
+
+/* 5.3: Cards */
+.card {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: .5rem;
+  transition: all var(--transition-speed-normal) ease;
+}
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+.card-header {
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--border-primary);
+}
+.card-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+/* 5.4: Tables */
+.table-wrap {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  overflow: auto;
+}
+.table { width: 100%; border-collapse: collapse; }
+.table th, .table td {
+  padding: 1rem 1.25rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-primary);
+  white-space: nowrap;
+}
+.table thead th {
+  background-color: var(--bg-tertiary);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.table tbody tr {
+  transition: background-color var(--transition-speed-fast) ease;
+}
+.table tbody tr:last-child td {
+  border-bottom: 0;
+}
+.table tbody tr:hover {
+  background-color: var(--bg-tertiary);
+}
+
+/* 5.5: User Menu & Dropdowns */
+.user-menu { position: relative; }
+.user-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.25rem;
+  border-radius: var(--radius-full);
+  background-color: transparent;
+  transition: background-color var(--transition-speed-normal) ease;
+  max-width: 250px;
+}
+.user-btn:hover { background-color: var(--bg-tertiary); }
+.user-btn .avatar {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--brand-secondary);
+  color: var(--text-inverted);
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 1.125rem;
+}
+.user-info {
+  flex-shrink: 1;
+  min-width: 0; /* Magic flexbox overflow fix */
+  text-align: left;
+}
+.user-name, .user-email {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+.user-name { font-weight: 600; color: var(--text-primary); }
+.user-email { font-size: 0.8rem; color: var(--text-secondary); }
+
+.user-dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.5rem);
+  width: 240px;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 0.5rem;
+  z-index: 50;
+  animation: slideUpFade 0.2s ease-out;
+}
+.user-dropdown .item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+.user-dropdown .item:hover {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+/*
+ * ===================================================================
+ * SECTION 5.6: WHATSAPP PAGE SPECIFICS (MODIFIED)
+ * ===================================================================
+*/
+.whatsapp-page .chat-area {
+  background-color: var(--bg-primary);
+  background-image: none;
+}
+
+/* * This is the OLD message bubble styling. It is being replaced by the new
+ * WhatsApp-style bubbles below. It's kept here for historical reference
+ * but the new styles will override it.
+*/
+.message-bubble-legacy {
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.75rem;
+  max-width: 80%;
+  box-shadow: var(--shadow-sm);
+  word-wrap: break-word;
+}
+.message-bubble-legacy.out {
+  background-color: #dcf8c6;
+  border-bottom-right-radius: 0.25rem;
+}
+.message-bubble-legacy.in {
+  background-color: #ffffff;
+  border-bottom-left-radius: 0.25rem;
+}
+[data-theme='dark'] .message-bubble-legacy.out {
+  background-color: #005c4b;
+  color: var(--text-primary);
+}
+[data-theme='dark'] .message-bubble-legacy.in {
+  background-color: #202c33;
+  color: var(--text-primary);
+}
+
+/*
+ * --- NEW WHATSAPP BUBBLE STYLES ---
+ * These styles will make the chat bubbles look like WhatsApp Web.
+ * They are applied via the `MessageList.jsx` component.
+*/
+.message-bubble {
+  padding: 6px 12px 8px; /* Top, H, Bottom */
+  border-radius: 8px;
+  max-width: 70%;
+  box-shadow: var(--shadow-sm);
+  word-wrap: break-word;
+  position: relative;
+  font-size: 14.2px;
+  line-height: 1.4;
+}
+
+/* Incoming message bubble (left side) */
+.message-bubble.in {
+  background-color: var(--bg-secondary);
+  border-bottom-left-radius: 0;
+  color: var(--text-primary);
+}
+
+/* Outgoing message bubble (right side) */
+.message-bubble.out {
+  background-color: #dcf8c6; /* WhatsApp green */
+  border-bottom-right-radius: 0;
+  color: #111b21; /* Dark text on green bubble */
+}
+
+/* Dark mode specific bubble colors */
+[data-theme='dark'] .message-bubble.in {
+  background-color: #202c33; /* Dark incoming bubble */
+  color: var(--text-primary);
+}
+[data-theme='dark'] .message-bubble.out {
+  background-color: #005c4b; /* Dark outgoing bubble */
+  color: var(--text-primary);
+}
+
+
+/*
+ * SECTION 6: KEYFRAME ANIMATIONS
+ * Reusable animations for engaging UI transitions.
+ */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideUpFade {
+  from { transform: translateY(10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes subtlePulse {
+  '0%, 100%': { transform: scale(1); }
+  '50%': { transform: scale(1.03); }
+}
+/*
+ * ===================================================================
+ * SECTION 5.6: WHATSAPP PAGE SPECIFICS (MODIFIED)
+ * Styles for chat bubbles to mimic WhatsApp Web.
+ * ===================================================================
+*/
+
+/* * This is the OLD message bubble styling. It is being replaced by the new
+ * WhatsApp-style bubbles below. It's kept here for historical reference 
+ * but the new styles will override it.
+*/
+.message-bubble-legacy {
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.75rem;
+  max-width: 80%;
+  box-shadow: var(--shadow-sm);
+  word-wrap: break-word;
+}
+.message-bubble-legacy.out {
+  background-color: #dcf8c6;
+  border-bottom-right-radius: 0.25rem;
+}
+.message-bubble-legacy.in {
+  background-color: #ffffff;
+  border-bottom-left-radius: 0.25rem;
+}
+[data-theme='dark'] .message-bubble-legacy.out {
+  background-color: #005c4b;
+  color: var(--text-primary);
+}
+[data-theme='dark'] .message-bubble-legacy.in {
+  background-color: #202c33;
+  color: var(--text-primary);
+}
+
+/*
+ * --- NEW WHATSAPP BUBBLE STYLES ---
+ * These styles will make the chat bubbles look like WhatsApp Web.
+ * They are applied via the `MessageList.jsx` component.
+*/
+.message-bubble {
+  padding: 6px 12px 8px; /* Top, Horizontal, Bottom */
+  border-radius: 8px;
+  max-width: 70%;
+  min-width: 80px; /* Ensure small messages have some width */
+  box-shadow: var(--shadow-sm);
+  word-wrap: break-word;
+  position: relative;
+  font-size: 14.2px;
+  line-height: 1.4;
+}
+
+/* Incoming message bubble (left side) */
+.message-bubble.in {
+  background-color: var(--bg-secondary);
+  border-bottom-left-radius: 0;
+  color: var(--text-primary);
+}
+
+/* Outgoing message bubble (right side) */
+.message-bubble.out {
+  background-color: #dcf8c6; /* WhatsApp light green */
+  border-bottom-right-radius: 0;
+  color: #111b21; /* Dark text on green bubble */
+}
+
+/* Dark mode specific bubble colors */
+[data-theme='dark'] .message-bubble.in {
+  background-color: #202c33; /* Dark incoming bubble */
+  color: var(--text-primary);
+}
+[data-theme='dark'] .message-bubble.out {
+  background-color: #005c4b; /* Dark outgoing bubble */
+  color: var(--text-primary);
+}
+/*
+ * ===================================================================
+ * SECTION 5.7: CONTACT PROFILE PAGE FIXES
+ * ===================================================================
+*/
+
+/* This ensures the main message list container within the chat card fills its parent */
+.card .h-full.flex.flex-col {
+  height: 100%;
+}

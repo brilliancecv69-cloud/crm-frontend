@@ -8,8 +8,10 @@ const axios = Axios.create({
 
 // ✅ interceptor: يضيف التوكن المناسب
 axios.interceptors.request.use((config) => {
+  // ✅ THE FIX: Changed from startsWith to includes
+  // This ensures that even full URLs (like http://.../super/...) are correctly identified.
   // لو المسار فيه /super → استخدم superToken
-  if (config.url && config.url.startsWith("/super")) {
+  if (config.url && config.url.includes("/super")) {
     const superToken = localStorage.getItem("superToken");
     if (superToken) {
       config.headers.Authorization = `Bearer ${superToken}`;

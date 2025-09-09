@@ -1,9 +1,11 @@
-// src/components/NotificationBell.jsx
 import { useEffect, useState, useRef } from "react";
 import { FaBell } from "react-icons/fa";
 import axios from "../axios";
 import socket from "../socketClient";
 import { useNavigate } from "react-router-dom";
+
+// A simple notification sound - you would place this file in your public directory
+const notificationSound = new Audio('/notification.mp3');
 
 function useClickAway(ref, cb) {
   useEffect(() => {
@@ -33,6 +35,9 @@ export default function NotificationBell() {
         // Listen for real-time notifications
         const handleNewNotification = (newNotification) => {
             setNotifications(prev => [newNotification, ...prev]);
+            // --- ✅ START: PLAY SOUND ON NEW NOTIFICATION ---
+            notificationSound.play().catch(e => console.error("Error playing sound:", e));
+            // --- ✅ END: PLAY SOUND ON NEW NOTIFICATION ---
         };
         socket.on("new_notification", handleNewNotification);
 
@@ -44,7 +49,7 @@ export default function NotificationBell() {
     const handleOpen = async () => {
         setIsOpen(prev => !prev);
         if (!isOpen && unreadCount > 0) {
-            // Mark as read after a short delay
+            // Mark as read after a short delay to allow user to see the unread state
             setTimeout(async () => {
                 try {
                     await axios.post("/notifications/read");
@@ -68,13 +73,17 @@ export default function NotificationBell() {
             <button onClick={handleOpen} className="relative icon-btn">
                 <FaBell />
                 {unreadCount > 0 && (
-                    <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white" />
+                    // --- ✅ START: IMPROVED UNREAD COUNT BADGE ---
+                    <div className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
+                        {unreadCount}
+                    </div>
+                    // --- ✅ END: IMPROVED UNREAD COUNT BADGE ---
                 )}
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border z-50">
-                    <div className="p-3 font-bold border-b">Notifications</div>
+                <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border dark:border-gray-700 z-50">
+                    <div className="p-3 font-bold border-b dark:border-gray-700">Notifications</div>
                     <div className="max-h-96 overflow-y-auto">
                         {notifications.length === 0 ? (
                             <p className="text-gray-500 text-center p-4">No notifications yet.</p>
@@ -83,7 +92,7 @@ export default function NotificationBell() {
                                 <div 
                                     key={n._id} 
                                     onClick={() => handleNotificationClick(n)}
-                                    className={`p-3 border-b hover:bg-gray-50 cursor-pointer ${!n.isRead ? 'bg-blue-50' : ''}`}
+                                    className={`p-3 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer ${!n.isRead ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
                                 >
                                     <p className="text-sm">{n.text}</p>
                                     <p className="text-xs text-gray-400 mt-1">{new Date(n.createdAt).toLocaleString()}</p>

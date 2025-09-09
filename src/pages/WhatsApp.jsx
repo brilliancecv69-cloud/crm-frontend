@@ -2,13 +2,13 @@ import { useEffect, useState, useMemo } from "react";
 import axios from "../axios";
 import MessageList from "../components/MessageList";
 import WhatsAppStatus from "../components/WhatsAppStatus";
-import { FaUserCircle, FaSearch } from "react-icons/fa";
+import { FaUserCircle, FaSearch, FaHistory } from "react-icons/fa"; // <-- ✅ New Icon
 import "./WhatsApp.css";
-import { useAuth } from "../context/AuthContext"; // ⭐️ استيراد useAuth
+import { useAuth } from "../context/AuthContext";
 
 export default function WhatsAppPage() {
-  const { user } = useAuth(); // ⭐️ الحصول على بيانات المستخدم من السياق
-  const tenantId = user?.tenantId; // ⭐️ استخدام tenantId من السياق
+  const { user } = useAuth();
+  const tenantId = user?.tenantId;
 
   const [allChats, setAllChats] = useState([]);
   const [activeChat, setActiveChat] = useState(null);
@@ -16,8 +16,6 @@ export default function WhatsAppPage() {
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
-  // ✅✅✅ *** بداية التعديل المطلوب *** ✅✅✅
-  // عند تحميل الصفحة، اطلب من الخادم بدء جلسة الواتساب
   useEffect(() => {
     const startWhatsAppSession = async () => {
       try {
@@ -33,7 +31,6 @@ export default function WhatsAppPage() {
       startWhatsAppSession();
     }
   }, [tenantId]);
-  // ✅✅✅ *** نهاية التعديل المطلوب *** ✅✅✅
 
   useEffect(() => {
     if (!tenantId) return;
@@ -42,8 +39,9 @@ export default function WhatsAppPage() {
       try {
         setLoading(true);
         setError("");
+        // The backend now automatically adds `hasActiveFollowUp` to each contact
         const res = await axios.get("/contacts", {
-          params: { limit: 1000, sortBy: "last_seen", order: "desc" },
+          params: { limit: 100000, order: "desc" },
         });
         if (res.data.ok) {
           setAllChats(res.data.data.items || []);
@@ -107,7 +105,14 @@ export default function WhatsAppPage() {
             >
               <FaUserCircle className="avatar-icon" />
               <div className="chat-details">
-                <p className="chat-name">{chat.name || chat.phone}</p>
+                <div className="flex items-center gap-2"> {/* Wrapper for name and icon */}
+                  <p className="chat-name">{chat.name || chat.phone}</p>
+                  {/* --- ✅ START: CONDITIONAL ICON DISPLAY --- */}
+                  {chat.hasActiveFollowUp && (
+                    <FaHistory className="text-blue-500 text-xs" title="Automated follow-up is active" />
+                  )}
+                  {/* --- ✅ END: CONDITIONAL ICON DISPLAY --- */}
+                </div>
                 <p className="chat-stage">Stage: {chat.stage || 'lead'}</p>
               </div>
             </div>
@@ -120,13 +125,13 @@ export default function WhatsAppPage() {
           <>
             <div className="chat-area-header">
               <div className="flex items-center">
-                 <FaUserCircle className="text-3xl text-gray-400 mr-3" />
-                 <div>
+                  <FaUserCircle className="text-3xl text-gray-400 mr-3" />
+                  <div>
                     <h3 className="font-bold text-lg">{activeChat.name || activeChat.phone}</h3>
                     <a href={`/contacts/${activeChat._id}`} className="text-xs text-blue-500 hover:underline">
                         View Full Profile
                     </a>
-                 </div>
+                  </div>
               </div>
             </div>
             <div className="message-list-container">

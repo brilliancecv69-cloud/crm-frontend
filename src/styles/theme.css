@@ -393,12 +393,14 @@ textarea { min-height: 120px; resize: vertical; }
 /* 5.3: Cards */
 .card {
   background-color: var(--bg-secondary);
+  color: var(--text-primary); /* ✅ يضمن النص يظهر */
   border: 1px solid var(--border-primary);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
-  padding: .5rem;
+  padding: 1rem;
   transition: all var(--transition-speed-normal) ease;
 }
+
 .card:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
@@ -695,4 +697,218 @@ textarea { min-height: 120px; resize: vertical; }
 /* This ensures the main message list container within the chat card fills its parent */
 .card .h-full.flex.flex-col {
   height: 100%;
+}
+/* Modal overlay يغطي الشاشة كلها */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5); /* خلفية شفافة */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* الصندوق نفسه */
+.modal {
+  background: #fff;
+  border-radius: 10px;
+  width: 500px;
+  max-width: 90%;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+/* رأس المودال */
+.modal-header {
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+/* جسم المودال */
+.modal-body {
+  padding: 15px;
+}
+.modal-body .form-group {
+  margin-bottom: 15px;
+}
+.modal-body label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+/* الفوتر */
+.modal-footer {
+  padding: 10px 15px;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.modal-footer .btn {
+  min-width: 100px;
+}
+.btn {
+  background: #007bff;
+  border: none;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+.btn:hover {
+  background: #b36b00;
+}
+.btn-secondary {
+  background: #ccc;
+  color: #333;
+}
+.btn-secondary:hover {
+  background: #aaa;
+}
+
+/* Animation بسيطة */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+/* ======================================================
+   SECTION X: FIXES FOR NEW PAGES USING THEME TOKENS
+   ====================================================== */
+
+/* Cards */
+.card {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary); /* ✅ يضمن النص يظهر */
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: 1rem;
+  transition: all var(--transition-speed-normal) ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Tables */
+.table-wrap {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  overflow: auto;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.table th, .table td {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border-primary);
+}
+.table th {
+  background-color: var(--bg-tertiary);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.table tbody tr:hover {
+  background-color: var(--bg-tertiary);
+}
+
+/* Badges */
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.badge.success {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+.badge.warning {
+  background: var(--color-warning);
+  color: var(--text-on-brand);
+}
+.badge.danger {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+}
+/* ======================================================
+   SECTION Y: KPI / STAT CARDS FIX
+   ====================================================== */
+
+/* الرقم داخل الكروت */
+.stat-value {
+  color: #000000; /* أسود في اللايت */
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
+[data-theme='dark'] .stat-value {
+  color: #ffffff; /* أبيض في الدارك */
+}
+/* ======================================================
+   SECTION Z: KPI COLOR CARDS FIX
+   ====================================================== */
+
+/* لما تكون الكروت ملونة */
+.color-card .stat-title {
+  color: #ffffff; /* عنوان أبيض */
+}
+
+.color-card .stat-value {
+  color: #ffffff; /* الرقم أبيض */
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+/* ====== Table Fixes ====== */
+.table th {
+  background-color: var(--bg-tertiary) !important;
+  color: var(--text-secondary) !important;
+}
+
+.table td {
+  color: var(--text-primary) !important;
+}
+
+.table tbody tr:hover {
+  background-color: var(--bg-tertiary) !important;
+}
+
+/* Actions buttons داخل الجدول */
+.table .btn {
+  background: var(--brand-primary);
+  color: var(--text-on-brand);
+  border-radius: var(--radius-md);
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: background var(--transition-speed-fast) ease;
+}
+.table .btn:hover {
+  background: var(--brand-primary-hover);
 }

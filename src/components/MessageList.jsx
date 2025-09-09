@@ -1,4 +1,3 @@
-// src/components/MessageList.jsx (Version 3.0 - Final Layout & Preview Fix)
 import { useEffect, useRef, useState } from "react";
 import axios from "../axios";
 import socket from "../socketClient";
@@ -12,26 +11,28 @@ import {
   FaStop,
   FaCheck,
   FaCheckDouble,
+  FaHistory, // <-- ✅ New Icon
 } from "react-icons/fa";
 
-// Helper components (no changes)
+// Helper components (no changes to these)
 function MediaMessage({ msg }) {
+    // ... (content is identical to the original)
     const mediaType = msg.meta?.mediaType || "";
     const mediaUrl = msg.meta?.mediaUrl || "";
     const fileName = msg.meta?.fileName || "file";
-  
+ 
     if (!mediaUrl)
       return <div className="text-red-400 text-xs italic">Media not available</div>;
-  
+ 
     if (mediaType.startsWith("image/"))
       return <img src={mediaUrl} alt={fileName} className="max-w-[200px] rounded-lg shadow my-1" />;
-  
+ 
     if (mediaType.startsWith("video/"))
       return <video src={mediaUrl} controls className="max-w-[220px] rounded-lg shadow my-1" />;
-  
+ 
     if (mediaType.startsWith("audio/"))
       return <audio src={mediaUrl} controls preload="auto" className="w-[220px] my-1" />;
-  
+ 
     return (
       <div className="flex items-center gap-2 bg-white/20 p-2 rounded-lg">
         <FaFileAlt className="text-lg" />
@@ -43,6 +44,7 @@ function MediaMessage({ msg }) {
 }
 
 function AckIcon({ ack }) {
+    // ... (content is identical to the original)
     if (ack === 1) return <FaCheck className="inline ml-1 text-xs text-gray-400" />;
     if (ack === 2) return <FaCheckDouble className="inline ml-1 text-xs text-gray-400" />;
     if (ack === 3) return <FaCheckDouble className="inline ml-1 text-xs text-blue-400" />;
@@ -50,12 +52,13 @@ function AckIcon({ ack }) {
 }
   
 function FilePreview({ file, onCancel, onSend }) {
+    // ... (content is identical to the original)
     const [caption, setCaption] = useState("");
     const isImage = file.type.startsWith("image/");
     const fileUrl = URL.createObjectURL(file);
-  
+ 
     return (
-      <div className="absolute bottom-full left-0 right-0 p-2 bg-white border-t border-gray-200 shadow-lg z-50">
+      <div className="absolute bottom-full left-0 right-0 p-2 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 shadow-lg z-50">
         <div className="flex items-start gap-3">
           {isImage ? (
             <img src={fileUrl} alt="preview" className="w-20 h-20 object-cover rounded" />
@@ -88,10 +91,11 @@ function FilePreview({ file, onCancel, onSend }) {
 }
 
 function MessageItem({ msg, deleteMessage }) {
+    // ... (content is identical to the original)
     const isOut = msg.direction === "out";
     const rowClasses = `message-row ${isOut ? 'message-row-out' : 'message-row-in'}`;
     const bubbleClasses = `message-bubble ${isOut ? 'out' : 'in'}`;
-  
+ 
     return (
       <div className={rowClasses}>
         <div className="relative group">
@@ -103,7 +107,7 @@ function MessageItem({ msg, deleteMessage }) {
             ) : (
               <MediaMessage msg={msg} />
             )}
-  
+ 
             <div className="text-[11px] mt-1 flex justify-end items-center text-gray-400">
               {new Date(msg.createdAt).toLocaleTimeString([], {
                 hour: "2-digit",
@@ -113,7 +117,7 @@ function MessageItem({ msg, deleteMessage }) {
               {msg.pending && <span className="ml-1 text-gray-400">⏳</span>}
             </div>
           </div>
-  
+ 
           <div className="absolute top-0 right-0 hidden group-hover:flex gap-2">
             <button onClick={() => deleteMessage(msg._id, false)} className="text-xs bg-gray-200 px-2 py-1 rounded">
               Delete me
@@ -131,13 +135,73 @@ function MessageItem({ msg, deleteMessage }) {
       </div>
     );
 }
+
+// --- ✅ START: NEW MODAL COMPONENT FOR FOLLOW-UPS ---
+const FollowUpModal = ({ show, onClose, contactId }) => {
+    const [templates, setTemplates] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+    
+    useEffect(() => {
+        if(show) {
+            setLoading(true);
+            axios.get('/follow-up-templates')
+                .then(res => setTemplates(res.data.data))
+                .catch(err => {
+                    setError("Failed to load templates.");
+                    console.error(err);
+                })
+                .finally(() => setLoading(false));
+        }
+    }, [show]);
+
+    const handleStartFollowUp = async (templateId) => {
+        if(!window.confirm("Are you sure you want to start this automated follow-up sequence?")) return;
+
+        try {
+            await axios.post(`/contacts/${contactId}/follow-up/start`, { templateId });
+            alert("Follow-up sequence started successfully!");
+            onClose();
+        } catch (err) {
+            alert(err.response?.data?.error || "Failed to start the sequence.");
+        }
+    };
+    
+    if (!show) return null;
+    
+    return (
+      <div className="absolute bottom-full left-0 right-0 p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 shadow-lg z-50">
+        <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-bold">Start Automated Follow-up</h3>
+            <button onClick={onClose} className="text-gray-400 text-2xl">&times;</button>
+        </div>
+        {loading && <p>Loading templates...</p>}
+        {error && <p className="text-red-500">{error}</p>}
+        {templates.length > 0 ? (
+            <ul className="space-y-2 max-h-60 overflow-y-auto">
+                {templates.map(template => (
+                    <li key={template._id} className="p-3 rounded-lg bg-gray-50 dark:bg-gray-700 flex justify-between items-center">
+                        <div>
+                            <p className="font-semibold">{template.name}</p>
+                            <p className="text-xs text-gray-500">{template.messages.length} message(s)</p>
+                        </div>
+                        <button onClick={() => handleStartFollowUp(template._id)} className="btn btn-sm btn-primary">Start</button>
+                    </li>
+                ))}
+            </ul>
+        ) : (
+            <p className="text-center text-gray-500 py-4">No follow-up templates found. You can create them from the "Follow-up Templates" page.</p>
+        )}
+      </div>
+    );
+};
+// --- ✅ END: NEW MODAL COMPONENT ---
   
 export default function MessageList({ contactId, tenantId }) {
   const listRef = useRef(null);
   const fileInputRef = useRef(null);
   const [messages, setMessages] = useState([]);
   const [newMsg, setNewMsg] = useState("");
-  // ... (rest of the state hooks are the same)
   const [sending, setSending] = useState(false);
   const [fileToPreview, setFileToPreview] = useState(null);
   const [recording, setRecording] = useState(false);
@@ -145,8 +209,11 @@ export default function MessageList({ contactId, tenantId }) {
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   const recordTimerRef = useRef(null);
+  // --- ✅ START: NEW STATE FOR FOLLOW-UP MODAL ---
+  const [isFollowUpModalOpen, setIsFollowUpModalOpen] = useState(false);
+  // --- ✅ END: NEW STATE ---
 
-  // ... (all functions like scrollToBottom, useEffect, handleSendMessage, etc. remain exactly the same)
+
   const scrollToBottom = () => {
     listRef.current?.scrollTo({
       top: listRef.current.scrollHeight,
@@ -156,6 +223,9 @@ export default function MessageList({ contactId, tenantId }) {
 
   useEffect(() => {
     if (!contactId || !tenantId) return;
+
+    // --- ✅ Close modal when contact changes ---
+    setIsFollowUpModalOpen(false);
 
     const fetchInitialData = async () => {
       try {
@@ -170,7 +240,6 @@ export default function MessageList({ contactId, tenantId }) {
 
     const handleNewMessage = (msgFromServer) => {
       if (String(msgFromServer.contactId) !== String(contactId)) return;
-
       setMessages((prevMessages) => {
         const pendingIndex = prevMessages.findIndex(
           (m) =>
@@ -178,20 +247,16 @@ export default function MessageList({ contactId, tenantId }) {
             m.body === msgFromServer.body &&
             m.meta?.fileName === msgFromServer.meta?.fileName
         );
-
         if (pendingIndex !== -1) {
           const newMessages = [...prevMessages];
           newMessages[pendingIndex] = msgFromServer;
           return newMessages;
         }
-
         if (!prevMessages.some(m => m._id === msgFromServer._id)) {
             return [...prevMessages, msgFromServer];
         }
-
         return prevMessages;
       });
-
       setTimeout(scrollToBottom, 100);
     };
 
@@ -199,113 +264,116 @@ export default function MessageList({ contactId, tenantId }) {
     return () => socket.off("msg:new", handleNewMessage);
   }, [contactId, tenantId]);
 
-  const addPendingMessage = (body, type, meta = {}) => {
-    const tempId = `temp-${Date.now()}`;
-    setMessages((prev) => [
-      ...prev,
-      {
-        _id: tempId,
-        contactId,
-        direction: "out",
-        type,
-        body,
-        createdAt: new Date(),
-        meta,
-        pending: true,
-      },
-    ]);
-  };
-
-  const handleSendMessage = async (body, type = "text", meta = {}) => {
-    if (!contactId || sending || (!body.trim() && type === "text")) return;
-    addPendingMessage(body, type, meta);
-
-    setSending(true);
-    try {
-      await axios.post(`/messages`, { contactId, type, body, meta });
-      if (type === "text") setNewMsg("");
-    } catch (err) {
-      alert("Failed to send message: " + (err.response?.data?.error || err.message));
-    } finally {
-      setSending(false);
-    }
-  };
-
-  const handleSendFile = async (caption) => {
-    if (!fileToPreview) return;
-    const file = fileToPreview;
-    setFileToPreview(null);
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const uploadRes = await axios.post(`/messages/upload`, formData);
-      if (uploadRes.data.ok) {
-        const { path, fileName, url, mediaType } = uploadRes.data.data;
-        const mainType = mediaType.split("/")[0];
-
-        await handleSendMessage(caption, mainType, {
-          path,
-          mediaUrl: url,
-          fileName,
-          mediaType,
-        });
-      }
-    } catch (err) {
-      console.error("File upload or send error:", err);
-    }
-  };
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) setFileToPreview(file);
-    e.target.value = null;
-  };
-
-  const deleteMessage = async (id, forEveryone = false) => {
-    try {
-      await axios.patch(`/messages/${id}/delete`, { forEveryone });
-    } catch (err) {
-      console.error("Failed to delete message:", err);
-    }
-  };
-
-  const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorderRef.current = new MediaRecorder(stream, { mimeType: "audio/webm" });
-      audioChunksRef.current = [];
-      mediaRecorderRef.current.ondataavailable = (e) => audioChunksRef.current.push(e.data);
-      mediaRecorderRef.current.onstop = () => {
+  // All other functions (addPendingMessage, handleSendMessage, etc.) remain unchanged
+  // ... (content is identical to the original)
+    const addPendingMessage = (body, type, meta = {}) => {
+        const tempId = `temp-${Date.now()}`;
+        setMessages((prev) => [
+          ...prev,
+          {
+            _id: tempId,
+            contactId,
+            direction: "out",
+            type,
+            body,
+            createdAt: new Date(),
+            meta,
+            pending: true,
+          },
+        ]);
+    };
+    
+    const handleSendMessage = async (body, type = "text", meta = {}) => {
+        if (!contactId || sending || (!body.trim() && type === "text")) return;
+        addPendingMessage(body, type, meta);
+    
+        setSending(true);
+        try {
+          await axios.post(`/messages`, { contactId, type, body, meta });
+          if (type === "text") setNewMsg("");
+        } catch (err) {
+          alert("Failed to send message: " + (err.response?.data?.error || err.message));
+        } finally {
+          setSending(false);
+        }
+    };
+    
+    const handleSendFile = async (caption) => {
+        if (!fileToPreview) return;
+        const file = fileToPreview;
+        setFileToPreview(null);
+    
+        const formData = new FormData();
+        formData.append("file", file);
+    
+        try {
+          const uploadRes = await axios.post(`/messages/upload`, formData); // Assuming this route exists for uploads
+          if (uploadRes.data.ok) {
+            const { path, fileName, url, mediaType } = uploadRes.data.data;
+            const mainType = mediaType.split("/")[0];
+    
+            await handleSendMessage(caption, mainType, {
+              path,
+              mediaUrl: url,
+              fileName,
+              mediaType,
+            });
+          }
+        } catch (err) {
+          console.error("File upload or send error:", err);
+        }
+    };
+    
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) setFileToPreview(file);
+        e.target.value = null;
+    };
+    
+    const deleteMessage = async (id, forEveryone = false) => {
+        try {
+          // This API needs to exist on your backend
+          await axios.patch(`/messages/${id}/delete`, { forEveryone }); 
+        } catch (err) {
+          console.error("Failed to delete message:", err);
+        }
+    };
+    
+    const startRecording = async () => {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          mediaRecorderRef.current = new MediaRecorder(stream, { mimeType: "audio/webm" });
+          audioChunksRef.current = [];
+          mediaRecorderRef.current.ondataavailable = (e) => audioChunksRef.current.push(e.data);
+          mediaRecorderRef.current.onstop = () => {
+            clearInterval(recordTimerRef.current);
+            const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+            const audioFile = new File([audioBlob], `recording-${Date.now()}.webm`, { type: "audio/webm" });
+            setFileToPreview(audioFile);
+          };
+          mediaRecorderRef.current.start();
+          setRecording(true);
+          recordTimerRef.current = setInterval(() => setRecordTime((t) => t + 1), 1000);
+        } catch {
+          alert("Could not access microphone.");
+        }
+    };
+    
+    const stopRecording = () => {
+        if (mediaRecorderRef.current) mediaRecorderRef.current.stop();
+        setRecording(false);
+        setRecordTime(0);
+    };
+    
+    const cancelRecording = () => {
+        if (mediaRecorderRef.current?.state === "recording") {
+          mediaRecorderRef.current.stop();
+        }
+        setRecording(false);
         clearInterval(recordTimerRef.current);
-        const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
-        const audioFile = new File([audioBlob], `recording-${Date.now()}.webm`, { type: "audio/webm" });
-        setFileToPreview(audioFile);
-      };
-      mediaRecorderRef.current.start();
-      setRecording(true);
-      recordTimerRef.current = setInterval(() => setRecordTime((t) => t + 1), 1000);
-    } catch {
-      alert("Could not access microphone.");
-    }
-  };
-
-  const stopRecording = () => {
-    if (mediaRecorderRef.current) mediaRecorderRef.current.stop();
-    setRecording(false);
-    setRecordTime(0);
-  };
-
-  const cancelRecording = () => {
-    if (mediaRecorderRef.current?.state === "recording") {
-      mediaRecorderRef.current.stop();
-    }
-    setRecording(false);
-    clearInterval(recordTimerRef.current);
-    setRecordTime(0);
-    audioChunksRef.current = [];
-  };
+        setRecordTime(0);
+        audioChunksRef.current = [];
+    };
 
   return (
     <div className="h-full flex flex-col">
@@ -315,8 +383,6 @@ export default function MessageList({ contactId, tenantId }) {
         ))}
       </div>
 
-      {/* --- ✅ MODIFICATION START --- */}
-      {/* The input bar and its preview are now wrapped in a relative container */}
       <div className="relative flex-shrink-0">
         {fileToPreview && (
           <FilePreview
@@ -326,31 +392,46 @@ export default function MessageList({ contactId, tenantId }) {
           />
         )}
         
-        <div className="p-2 border-t flex items-center gap-2 bg-white rounded-b-lg">
+        {/* --- ✅ START: FOLLOW-UP MODAL INTEGRATION --- */}
+        <FollowUpModal 
+            show={isFollowUpModalOpen}
+            onClose={() => setIsFollowUpModalOpen(false)}
+            contactId={contactId}
+        />
+        {/* --- ✅ END: FOLLOW-UP MODAL INTEGRATION --- */}
+        
+        <div className="p-2 border-t flex items-center gap-2 bg-white dark:bg-gray-800 rounded-b-lg">
             {recording ? (
             <div className="flex-1 flex items-center gap-3">
-                <button onClick={stopRecording} className="btn danger"><FaStop /></button>
-                <div className="flex items-center gap-2 text-red-500 font-mono">
+              <button onClick={stopRecording} className="btn danger"><FaStop /></button>
+              <div className="flex items-center gap-2 text-red-500 font-mono">
                 <span className="animate-pulse">🔴</span>
                 <span>{Math.floor(recordTime / 60)}:{(recordTime % 60).toString().padStart(2, "0")}</span>
-                </div>
-                <button onClick={cancelRecording} className="btn ml-auto"><FaTrash /></button>
+              </div>
+              <button onClick={cancelRecording} className="btn ml-auto"><FaTrash /></button>
             </div>
             ) : (
             <>
                 <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" />
                 <button onClick={() => fileInputRef.current.click()} className="btn icon-btn" title="Attach File">
-                <FaPaperclip />
+                  <FaPaperclip />
                 </button>
+
+                {/* --- ✅ START: NEW FOLLOW-UP BUTTON --- */}
+                <button onClick={() => setIsFollowUpModalOpen(true)} className="btn icon-btn" title="Start Automated Follow-up">
+                  <FaHistory />
+                </button>
+                {/* --- ✅ END: NEW FOLLOW-UP BUTTON --- */}
+
                 <button onClick={startRecording} className="btn icon-btn" title="Record Voice">
-                <FaMicrophone />
+                  <FaMicrophone />
                 </button>
                 <div className="relative flex-1">
                 <input
                     value={newMsg}
                     onChange={(e) => setNewMsg(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleSendMessage(newMsg, "text", {})}
-                    className="input w-full rounded-full px-3 py-2 border bg-gray-100"
+                    className="input w-full rounded-full px-3 py-2 border bg-gray-100 dark:bg-gray-700"
                     placeholder="Type a message..."
                 />
                 <button onClick={() => setNewMsg("")} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700">
@@ -358,10 +439,10 @@ export default function MessageList({ contactId, tenantId }) {
                 </button>
                 </div>
                 <button
-                onClick={() => handleSendMessage(newMsg, "text", {})}
-                disabled={!newMsg.trim() || sending}
-                className="btn primary rounded-full px-4"
-                title="Send"
+                    onClick={() => handleSendMessage(newMsg, "text", {})}
+                    disabled={!newMsg.trim() || sending}
+                    className="btn primary rounded-full px-4"
+                    title="Send"
                 >
                 <FaPaperPlane />
                 </button>
@@ -369,7 +450,6 @@ export default function MessageList({ contactId, tenantId }) {
             )}
         </div>
       </div>
-       {/* --- ✅ MODIFICATION END --- */}
     </div>
   );
 }

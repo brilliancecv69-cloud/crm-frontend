@@ -1,8 +1,11 @@
 import { io } from "socket.io-client";
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+// ✅  التصحيح: تحديد رابط السوكيت ليكون الدومين الأساسي
+// window.location.origin سيقوم بأخذ "https://wavoo.online" تلقائيًا
+const SOCKET_URL = window.location.origin; 
 
-const socket = io(API_BASE, {
+// ✅  التصحيح: استخدام الرابط الصحيح للاتصال
+const socket = io(SOCKET_URL, {
   path: "/socket.io",
   autoConnect: false,
   reconnection: true,

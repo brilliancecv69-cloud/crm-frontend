@@ -1,8 +1,11 @@
 import { io } from "socket.io-client";
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+// ✅ التصحيح: اقرأ العنوان الأساسي من ملف .env
+// وقم بإزالة '/api' من النهاية للحصول على الرابط الرئيسي للسيرفر
+const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
+const SOCKET_URL = API_URL.replace("/api", ""); // سيصبح "http://localhost:5000"
 
-const socket = io(API_BASE, {
+const socket = io(SOCKET_URL, {
   path: "/socket.io",
   autoConnect: false,
   reconnection: true,

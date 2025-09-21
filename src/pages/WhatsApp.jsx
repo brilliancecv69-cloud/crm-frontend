@@ -78,8 +78,31 @@ export default function WhatsAppPage() {
     <div className="whatsapp-page">
       <div className="chat-sidebar">
         <div className="sidebar-header">
-          <WhatsAppStatus tenantId={tenantId} />
-        </div>
+  <WhatsAppStatus tenantId={tenantId} />
+
+  <div className="flex gap-2 mt-2">
+  <button
+  onClick={async () => {
+    const confirmed = window.confirm("هل أنت متأكد أنك تريد حذف جلسة واتساب؟");
+    if (!confirmed) return;
+
+    try {
+      await axios.delete("/whatsapp/session");
+      alert("✅ Session deleted. Please request new QR.");
+    } catch (err) {
+      alert("❌ Failed to delete session.");
+    }
+  }}
+  className="btn btn-danger btn-sm"
+>
+  Delete
+</button>
+
+
+  
+
+</div>
+</div> 
         
         <div className="search-container">
           <div className="search-wrapper">

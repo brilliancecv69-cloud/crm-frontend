@@ -151,12 +151,21 @@ function MainLayout() {
   return (
     <div className="layout-wrapper">
       <aside className={`sidebar ${!sidebarOpen && "is-collapsed"}`}>
-        <div className="sidebar-header">
-          {sidebarOpen && <NavLink to="/" className="sidebar-brand-logo"><span>CRM</span></NavLink>}
-          <button className="icon-btn" onClick={() => setSidebarOpen(s => !s)} aria-label="Toggle sidebar">
-            <span className="i">{sidebarOpen ? "chevron_left" : "menu"}</span>
-          </button>
-        </div>
+      <div className="sidebar-header bg-sidebar">
+  {sidebarOpen && (
+    <NavLink to="/" className="sidebar-brand-logo">
+      <span>Wavoo CRM</span>
+    </NavLink>
+  )}
+  <button
+    className="icon-btn"
+    onClick={() => setSidebarOpen(s => !s)}
+    aria-label="Toggle sidebar"
+  >
+    <span className="i">{sidebarOpen ? "chevron_left" : "menu"}</span>
+  </button>
+</div>
+
         <nav className="sidebar-nav">
           {menuItems
             .filter(item => item.roles.includes(user?.role)) // ✅ فلترة حسب الدور

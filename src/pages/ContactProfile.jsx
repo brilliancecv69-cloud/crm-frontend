@@ -6,7 +6,7 @@ import { FaChevronDown } from "react-icons/fa";
 import MessageList from "../components/MessageList";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
-const PIPELINE_STATUS_OPTIONS = ["new", "contacted", "qualified", "proposal", "won", "lost"];
+const PIPELINE_STATUS_OPTIONS = [ 'negotiation', "proposal",'won', 'lost'];
 const SHIPPING_STATUS_OPTIONS = ['pending', 'processing', 'shipped', 'delivered', 'returned', 'cancelled'];
 
 // ✅ --- مكون الأقسام القابلة للطي ---
@@ -404,11 +404,15 @@ export default function ContactProfile() {
                 </div>
                 <h3 className="font-bold mb-3 mt-4">History</h3>
                 <ul className="text-sm space-y-1 text-gray-600">
-                    {contact.stageHistory.slice(-5).reverse().map((h, i) => (
-                        <li key={i}><strong>{h.to}</strong> ← {h.from} <span className="text-xs">({new Date(h.at).toLocaleDateString()})</span></li>
-                    ))}
-                    <li>Created <span className="text-xs">({new Date(contact.createdAt).toLocaleDateString()})</span></li>
-                </ul>
+  {contact.stageHistory.slice(-5).reverse().map((h, i) => (
+      <li key={i}>
+        <strong>{h.to}</strong> ← {h.from} 
+        <span className="text-xs">({new Date(h.timestamp).toLocaleDateString()})</span>
+      </li>
+  ))}
+  <li>Created <span className="text-xs">({new Date(contact.createdAt).toLocaleDateString()})</span></li>
+</ul>
+
             </AccordionSection>
         </div>
       </div>

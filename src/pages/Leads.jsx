@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo, useCallback } from "react";
 import axios from "../axios";
 import { Link } from "react-router-dom";
 import { debounce } from "lodash";
-import { FaCheck, FaHistory } from 'react-icons/fa';
+import { FaCheck } from 'react-icons/fa';
 
 // Helper function to format date
 const formatDate = (dateStr) => {
@@ -26,7 +26,6 @@ const AssignModal = ({ isOpen, onClose, salesUsers, onAssign }) => {
     };
 
     return (
-        // --- ✅ تم تعديل تصميم الخلفية هنا ---
         <div className="fixed inset-0 bg-gray-500 bg-opacity-50 backdrop-blur-sm flex justify-center items-center z-50">
             <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-sm card">
                 <h3 className="text-lg font-bold mb-4">Assign to Sales</h3>
@@ -68,6 +67,11 @@ export default function LeadsPage() {
     const [errorMsg, setErrorMsg] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
 
+    // pagination state
+    const [page, setPage] = useState(1);
+    const [total, setTotal] = useState(0);
+    const limit = 50;
+
     // Filters State
     const [filters, setFilters] = useState({
         query: "",
@@ -77,7 +81,7 @@ export default function LeadsPage() {
     });
 
     // Debounced fetch function
-    const fetchLeads = useCallback(debounce(async (currentFilters) => {
+    const fetchLeads = useCallback(debounce(async (currentFilters, currentPage) => {
         try {
             setLoading(true);
             setErrorMsg("");
@@ -87,14 +91,16 @@ export default function LeadsPage() {
                 from: currentFilters.fromDate || undefined,
                 to: currentFilters.toDate || undefined,
                 assignedTo: currentFilters.assignedTo === 'all' ? undefined : currentFilters.assignedTo,
-                page: 1,
-                limit: 50000,
+                page: currentPage,
+                limit,
                 sortBy: "createdAt",
                 order: "desc",
             };
             const res = await axios.get(`/contacts`, { params });
-            const data = res.data?.data?.items ?? [];
-            setContacts(Array.isArray(data) ? data : []);
+            const items = res.data?.data?.items ?? [];
+            const totalDocs = res.data?.data?.total ?? 0;
+            setContacts(Array.isArray(items) ? items : []);
+            setTotal(totalDocs);
         } catch (err) {
             console.error("Error fetching leads:", err);
             const msg = err.response?.data?.error || err.message || "Unknown error";
@@ -105,32 +111,29 @@ export default function LeadsPage() {
         }
     }, 300), []);
 
-
     // Fetch sales users on mount
     useEffect(() => {
         const fetchSalesUsers = async () => {
             try {
-                // --- ✅ تم تصحيح مسار جلب الموظفين هنا ---
                 const res = await axios.get('/auth/users?role=sales');
                 setSalesUsers(res.data?.data || []);
             } catch (err) {
                 console.error("Failed to fetch sales users:", err);
-                // Optional: Show an error to the user
-                // setErrorMsg("Could not load sales team list.");
             }
         };
         fetchSalesUsers();
     }, []);
 
-    // Fetch leads when filters change
+    // Fetch leads when filters or page change
     useEffect(() => {
-        fetchLeads(filters);
+        fetchLeads(filters, page);
         setSelectedLeads([]);
-    }, [filters, fetchLeads]);
+    }, [filters, page, fetchLeads]);
 
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
         setFilters(prev => ({ ...prev, [name]: value }));
+        setPage(1); // reset to first page when filters change
     };
 
     const setDateRange = (range) => {
@@ -144,6 +147,7 @@ export default function LeadsPage() {
             from = formatDate(new Date(today.getFullYear(), today.getMonth(), 1));
         }
         setFilters(prev => ({ ...prev, fromDate: from, toDate: to }));
+        setPage(1);
     };
 
     const handleSelectLead = (leadId) => {
@@ -174,7 +178,7 @@ export default function LeadsPage() {
             alert(res.data.message || 'Leads assigned successfully!');
             setIsModalOpen(false);
             setSelectedLeads([]);
-            fetchLeads(filters); 
+            fetchLeads(filters, page);
         } catch (err) {
             const msg = err.response?.data?.error || err.message || "Failed to assign leads.";
             alert(`Error: ${msg}`);
@@ -201,11 +205,13 @@ export default function LeadsPage() {
     const hasRows = contacts && contacts.length > 0;
     const isAllSelected = hasRows && selectedLeads.length === contacts.length;
 
+    const totalPages = Math.ceil(total / limit);
+
     return (
         <div className="flex flex-col h-[calc(100vh-8.5rem)]">
             <div className="flex-shrink-0">
                 <div className="flex justify-between items-center mb-2">
-                    <h2 className="text-2xl font-bold">Leads ({contacts.length})</h2>
+                    <h2 className="text-2xl font-bold">Leads ({total})</h2>
                     <div className="flex gap-2">
                         <button 
                             onClick={() => setIsModalOpen(true)} 
@@ -219,7 +225,6 @@ export default function LeadsPage() {
                     </div>
                 </div>
 
-                {/* --- ✅ تم تعديل الفلاتر وإضافة أزرار التاريخ --- */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2 mb-2 p-3 card text-sm">
                     <div className="field lg:col-span-2">
                         <span>Search...</span>
@@ -283,6 +288,25 @@ export default function LeadsPage() {
                         ))}
                     </tbody>
                 </table>
+            </div>
+
+            {/* Pagination controls */}
+            <div className="flex justify-center items-center gap-4 p-4">
+                <button 
+                    className="btn secondary"
+                    onClick={() => setPage(p => Math.max(1, p - 1))}
+                    disabled={page === 1}
+                >
+                    Prev
+                </button>
+                <span>Page {page} of {totalPages || 1}</span>
+                <button 
+                    className="btn secondary"
+                    onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                    disabled={page === totalPages || totalPages === 0}
+                >
+                    Next
+                </button>
             </div>
 
             <AssignModal 

@@ -912,3 +912,7 @@ textarea { min-height: 120px; resize: vertical; }
 .table .btn:hover {
   background: var(--brand-primary-hover);
 }
+.sidebar-header {
+  background-color: var(--sidebar-bg) !important;
+  color: var(--sidebar-text, #fff);
+}

@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "../axios";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
 
-export default function AddProduct({ onClose, onAdded }) {
+export default function AddProduct({ product, onClose, onAdded }) {
   const [form, setForm] = useState({
     name: "",
     sku: "",
@@ -16,6 +16,21 @@ export default function AddProduct({ onClose, onAdded }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // لو جاي من بره منتج للتعديل نملأ الفورم
+  useEffect(() => {
+    if (product) {
+      setForm({
+        name: product.name || "",
+        sku: product.sku || "",
+        category: product.category || "",
+        price: product.price || "",
+        stockQty: product.stockQty || "",
+        minQty: product.minQty || "",
+        notes: product.notes || ""
+      });
+    }
+  }, [product]);
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -25,15 +40,24 @@ export default function AddProduct({ onClose, onAdded }) {
     setLoading(true);
     setError("");
     try {
-      const { data } = await axios.post(`${API_BASE}/products`, form);
-      if (data.ok) {
+      let res;
+      if (product && product._id) {
+        // تعديل
+        const { _id, ...payload } = form; // نتأكد إن id مش بيتبعت
+        res = await axios.patch(`${API_BASE}/products/${product._id}`, payload);
+      } else {
+        // إضافة
+        res = await axios.post(`${API_BASE}/products`, form);
+      }
+
+      if (res.data.ok) {
         onAdded();
         onClose();
       } else {
-        setError(data.error || "Failed to add product");
+        setError(res.data.error || "Failed to save product");
       }
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.error || err.message);
     } finally {
       setLoading(false);
     }
@@ -42,7 +66,9 @@ export default function AddProduct({ onClose, onAdded }) {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white p-6 rounded shadow w-full max-w-lg">
-        <h2 className="text-xl font-bold mb-4">Add Product</h2>
+        <h2 className="text-xl font-bold mb-4">
+          {product ? "Edit Product" : "Add Product"}
+        </h2>
 
         {error && <p className="text-red-600">{error}</p>}
 

@@ -13,6 +13,7 @@ import {
   FaCheckDouble,
   FaHistory, // <-- ✅ New Icon
 } from "react-icons/fa";
+import CannedResponsePopover from "./CannedResponsePopover"; // ✅ 1. استيراد المكون الجديد
 
 // Helper components (no changes to these)
 function MediaMessage({ msg }) {
@@ -374,6 +375,9 @@ export default function MessageList({ contactId, tenantId }) {
         setRecordTime(0);
         audioChunksRef.current = [];
     };
+   const handleCannedResponseSelect = (responseText) => {
+    setNewMsg(prev => prev ? `${prev} ${responseText}` : responseText);
+  };
 
   return (
     <div className="h-full flex flex-col">
@@ -427,6 +431,9 @@ export default function MessageList({ contactId, tenantId }) {
                   <FaMicrophone />
                 </button>
                 <div className="relative flex-1">
+                 <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                    <CannedResponsePopover onSelectResponse={handleCannedResponseSelect} />
+                </div>
                 <input
                     value={newMsg}
                     onChange={(e) => setNewMsg(e.target.value)}
@@ -434,9 +441,7 @@ export default function MessageList({ contactId, tenantId }) {
                     className="input w-full rounded-full px-3 py-2 border bg-gray-100 dark:bg-gray-700"
                     placeholder="Type a message..."
                 />
-                <button onClick={() => setNewMsg("")} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700">
-                    <FaBolt />
-                </button>
+              
                 </div>
                 <button
                     onClick={() => handleSendMessage(newMsg, "text", {})}
